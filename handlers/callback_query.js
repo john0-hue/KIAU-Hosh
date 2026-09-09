@@ -886,7 +886,7 @@ async function handleCallbackQuery(callbackQuery, user, botOverride) {
         '❓ <b>راهنمای ربات</b>\n\n' +
         '🔹 <b>جستجوی درس</b> — گروه تلگرام درس مورد نظرتان را پیدا کنید\n' +
         '🔹 <b>ارسال لینک</b> — لینک گروه درسی را برای تأیید ارسال کنید\n' +
-        '🔹 <b>پیشنهاد درس</b> — درسی که در ربات نیست پیشنهاد دهید\n\n📞 پشتیبانی: @support',
+        '🔹 <b>پیشنهاد درس</b> — درسی که در ربات نیست پیشنهاد دهید\n\n📞 پشتیبانی: @MsderAmir',
         { chat_id: chatId, message_id: msgId, parse_mode: 'HTML', ...mainMenuKeyboard(auth.isAdmin(userObj)) },
       );
       await safeAnswer(qid);
