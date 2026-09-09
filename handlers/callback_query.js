@@ -134,9 +134,10 @@ async function instructorSelect(courseId, normalizedInstructor, chatId, msgId, q
   // persist selection in session
   await db.updateSession(userId, {
     state: config.SESSION_STATE.AWAITING_SEMESTER,
-    course_id: courseId, course_name: course.name, instructor_name: instructor.name,
+    course_id: courseId,
+    course_name: course.name,
+    instructor_name: instructor.name,
     instructor_normalized: normalizedInstructor,
-    courseId: courseId, courseName: course.name, instructorName: instructor.name, normalizedInstructor: normalizedInstructor,
   });
 
   var semesters = await db.getSemestersForCourse(courseId, normalizedInstructor);
@@ -169,7 +170,7 @@ async function semesterSelect(semesterId, chatId, msgId, qid, userId) {
     return;
   }
   var session = await db.getSession(userId);
-  if (!session || !session.courseId || !session.instructorName) {
+  if (!session || !session.course_id || !session.instructor_name) {
     await bot.editMessageText(
       '⚠️ جلسه شما منقضی شده است. لطفاً دوباره شروع کنید.',
       { chat_id: chatId, message_id: msgId, parse_mode: 'HTML',
@@ -189,7 +190,7 @@ async function semesterSelect(semesterId, chatId, msgId, qid, userId) {
     '📅 <b>' + semester.name + '</b>\n\n' +
     '🔗 لینک گروه تلگرام را ارسال کنید:',
     { chat_id: chatId, message_id: msgId, parse_mode: 'HTML',
-      reply_markup: backKb('is:' + session.courseId + ':' + (session.normalizedInstructor || '')) },
+      reply_markup: backKb('is:' + session.course_id + ':' + (session.instructor_normalized || '')) },
   );
   await safeAnswer(qid);
 }
@@ -862,18 +863,30 @@ async function handleCallbackQuery(callbackQuery, user, botOverride) {
     if (prefix === 'sl') {
 
       var currentSession = await db.getSession(userId);
-    
       console.log('[sl session before update]', currentSession);
-    
-      if (!currentSession) {
-        await safeAnswer(qid, 'جلسه انتخاب درس منقضی شده است', true);
+
+      if (!currentSession || !currentSession.course_id || !currentSession.instructor_name || !currentSession.semester_id) {
+        await db.updateSession(userId, {
+          state: config.SESSION_STATE.AWAITING_COURSE,
+          course_id: null,
+          course_name: null,
+          instructor_name: null,
+          instructor_normalized: null,
+          semester_id: null,
+          semester_code: null
+        });
+        await bot.editMessageText(
+          '🔗 برای ارسال لینک ابتدا درس را انتخاب کنید:',
+          { chat_id: chatId, message_id: msgId, parse_mode: 'HTML', reply_markup: backKb('m:0') }
+        );
+        await safeAnswer(qid);
         return;
       }
-    
+
       await db.updateSession(userId, {
         state: config.SESSION_STATE.AWAITING_LINK
       });
-    
+
       await safeAnswer(qid);
       return;
     }
@@ -905,9 +918,9 @@ async function handleCallbackQuery(callbackQuery, user, botOverride) {
     // ────────────── CANCEL ──────────────
     if (prefix === 'ca') {
       await db.updateSession(userId, {
-        state: null, courseId: null, courseName: null,
-        instructorName: null, normalizedInstructor: null,
-        semesterId: null, semesterName: null, pendingSubmissionId: null,
+        state: null, course_id: null, course_name: null,
+        instructor_name: null, instructor_normalized: null,
+        semester_id: null, semester_code: null, pendingSubmissionId: null,
       });
       await bot.editMessageText(
         '✅ عملیات لغو شد.\n\n🏠 منوی اصلی:',
