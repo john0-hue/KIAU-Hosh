@@ -332,18 +332,24 @@ async function handleAwaitingLink(bot, chatId, userId, text, data, user) {
     userId,
     text
   });
+  console.log(validation.validateUrl(text));
+
   var urlResult = validation.validateUrl(text);
   if (!urlResult.ok) {
     return send(bot, chatId, '\u274C ' + urlResult.error, {
       reply_markup: keyboards.cancelButton()
     });
   }
+  console.log('[link validation]', urlResult);
 
   var url = urlResult.value;
+  console.log('[url]', url);
   var canonicalUrl = matching.normalizeUrl(url);
+  console.log('[canonical]', canonicalUrl);
 
   // Check duplicates
   var existingSubmission = await db.getSubmissionByCanonicalUrl(canonicalUrl);
+  console.log('[existingSubmission]', existingSubmission);
   if (existingSubmission) {
     await sessions.endSession(userId);
     return send(bot, chatId, messages.submissionAlreadyExists(), {
@@ -351,6 +357,7 @@ async function handleAwaitingLink(bot, chatId, userId, text, data, user) {
     });
   }
   var existingLink = await db.getGroupLinkByCanonicalUrl(canonicalUrl);
+  console.log('[existingLink]', existingLink);
   if (existingLink) {
     await sessions.endSession(userId);
     return send(bot, chatId, '\u2705 \u0627\u06CC\u0646 \u0644\u06CC\u0646\u06A9 \u0642\u0628\u0644\u0627\u064B \u062F\u0631 \u0633\u06CC\u0633\u062A\u0645 \u062B\u0628\u062A \u0634\u062F\u0647 \u0627\u0633\u062A.', {
@@ -410,8 +417,10 @@ async function handleAwaitingLink(bot, chatId, userId, text, data, user) {
     });
   }
 
+  console.log('[before createSubmission]');
   // Regular user → pending submission
   var submission = await db.createSubmission(url, canonicalUrl, courseId, courseName, instructorName, instructorNormalized, semesterId, semesterCode, userId);
+  console.log('[submission created]', submission);
   await db.audit(userId, ROLES.USER, 'submit_link', 'submission', submission.id, '', url);
 
   // Notify supervisors
