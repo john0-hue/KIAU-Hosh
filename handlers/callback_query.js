@@ -860,7 +860,20 @@ async function handleCallbackQuery(callbackQuery, user, botOverride) {
 
     // ────────────── SUBMIT LINK ──────────────
     if (prefix === 'sl') {
-      await db.updateSession(userId, { state: config.SESSION_STATE.AWAITING_LINK });
+      var currentSession = await db.getSession(userId);
+
+      await db.updateSession(userId, {
+        state: config.SESSION_STATE.AWAITING_LINK,
+
+        course_id: currentSession.course_id,
+        course_name: currentSession.course_name,
+
+        instructor_name: currentSession.instructor_name,
+        instructor_normalized: currentSession.instructor_normalized,
+
+        semester_id: currentSession.semester_id,
+        semester_code: currentSession.semester_code
+      });
       await bot.editMessageText(
         '🔗 <b>ارسال لینک گروه</b>\n\n📝 لینک گروه تلگرام را ارسال کنید:\n\n⏰ جلسه شما ۵ دقیقه اعتبار دارد.\n(یا /cancel برای لغو)',
         { chat_id: chatId, message_id: msgId, parse_mode: 'HTML', reply_markup: backKb('m:0') },
