@@ -327,6 +327,11 @@ async function handleAwaitingInstructor(bot, chatId, userId, text, data, user) {
 // AWAITING_LINK — user types a URL
 // ---------------------------------------------------------------------------
 async function handleAwaitingLink(bot, chatId, userId, text, data, user) {
+  console.log('[link submit]', {
+    chatId,
+    userId,
+    text
+  });
   var urlResult = validation.validateUrl(text);
   if (!urlResult.ok) {
     return send(bot, chatId, '\u274C ' + urlResult.error, {
