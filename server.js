@@ -10,6 +10,8 @@ const port = Number(process.env.PORT || 3000);
 const webhookPath = process.env.WEBHOOK_PATH || '/telegram/webhook';
 const webhookSecret = process.env.WEBHOOK_SECRET || '';
 
+console.log('[server] BUILD: webhook-json-fix-v1');
+
 app.disable('x-powered-by');
 
 app.get('/', (_req, res) =>
