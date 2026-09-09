@@ -1,0 +1,23 @@
+{
+  "name": "kiau-hoosh-bot",
+  "version": "3.0.0",
+  "private": true,
+  "description": "KIAU Hoosh Telegram course/group-link bot for Railway",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "db:migrate": "node scripts/migrate.js",
+    "test": "node tests/run.js",
+    "test:contract": "node tests/platform_contract.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "grammy": "^1.46.0",
+    "pg": "^8.23.0"
+  },
+  "license": "MIT"
+}
