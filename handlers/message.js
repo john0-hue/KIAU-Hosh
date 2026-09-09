@@ -358,6 +358,17 @@ async function handleAwaitingLink(bot, chatId, userId, text, data, user) {
   }
   var existingLink = await db.getGroupLinkByCanonicalUrl(canonicalUrl);
   console.log('[existingLink]', existingLink);
+
+  console.log('[session data]', data);
+
+  console.log('[before session check]', {
+    courseId: data.course_id,
+    courseName: data.course_name,
+    instructorName: data.instructor_name,
+    semesterId: data.semester_id,
+    semesterCode: data.semester_code
+  });
+
   if (existingLink) {
     await sessions.endSession(userId);
     return send(bot, chatId, '\u2705 \u0627\u06CC\u0646 \u0644\u06CC\u0646\u06A9 \u0642\u0628\u0644\u0627\u064B \u062F\u0631 \u0633\u06CC\u0633\u062A\u0645 \u062B\u0628\u062A \u0634\u062F\u0647 \u0627\u0633\u062A.', {
